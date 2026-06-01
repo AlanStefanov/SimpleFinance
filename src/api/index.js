@@ -43,3 +43,5 @@ export const updateSummaryStatus = (id, data) => api.patch(`/cards/summaries/${i
 export const deleteSummary = (id) => api.delete(`/cards/summaries/${id}`).then(r => r.data);
 
 export const fetchCategories = () => api.get('/categories').then(r => r.data);
+
+export default api;
