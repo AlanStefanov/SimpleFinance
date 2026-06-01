@@ -118,9 +118,9 @@ export default function Expenses() {
           return (
             <Grid item xs={6} sm={3} key={t.value}>
               <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
                   <Typography variant="body2" color="text.secondary">{t.label}</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 700 }}>{formatCurrency(s?.total || 0)}</Typography>
+                  <Typography sx={{ fontWeight: 700, fontSize: { xs: '1rem', md: '1.2rem' } }}>{formatCurrency(s?.total || 0)}</Typography>
                   <Typography variant="caption" color="text.secondary">{s?.count || 0} registros</Typography>
                 </CardContent>
               </Card>

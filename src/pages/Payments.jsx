@@ -114,17 +114,17 @@ export default function Payments() {
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={6}>
           <Card sx={{ bgcolor: '#e8f0fe' }}>
-            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
               <Typography variant="body2" color="text.secondary">Total Pendiente</Typography>
-              <Typography variant="h5" sx={{ fontWeight: 700, color: 'error.main' }}>{formatCurrency(totalPending)}</Typography>
+              <Typography sx={{ fontWeight: 700, color: 'error.main', fontSize: { xs: '1.1rem', md: '1.3rem' } }}>{formatCurrency(totalPending)}</Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={6}>
           <Card sx={{ bgcolor: '#e6f4ea' }}>
-            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
               <Typography variant="body2" color="text.secondary">Total Pagado</Typography>
-              <Typography variant="h5" sx={{ fontWeight: 700, color: 'success.main' }}>{formatCurrency(totalPaid)}</Typography>
+              <Typography sx={{ fontWeight: 700, color: 'success.main', fontSize: { xs: '1.1rem', md: '1.3rem' } }}>{formatCurrency(totalPaid)}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -168,7 +168,7 @@ export default function Payments() {
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                           <Box>
                             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{p.name}</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700, mt: 0.5 }}>
+                            <Typography sx={{ fontWeight: 700, mt: 0.5, fontSize: { xs: '1rem', md: '1.2rem' } }}>
                               {formatCurrency(p.amount)}
                             </Typography>
                           </Box>
