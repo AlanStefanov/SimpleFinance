@@ -79,6 +79,7 @@ export default function Expenses() {
       category_id: form.category_id || null,
       due_day: form.type === 'fixed' ? form.due_day : null,
       expense_date: form.type === 'fixed' ? '' : form.expense_date,
+      is_paid: form.type === 'fixed' ? false : form.is_paid,
     };
     if (editItem) await updateExpense(editItem.id, data);
     else await createExpense(data);

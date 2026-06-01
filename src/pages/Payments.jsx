@@ -285,7 +285,6 @@ export default function Payments() {
               <Select value={payForm.status} label="Estado" onChange={(e) => setPayForm({ ...payForm, status: e.target.value })}>
                 <MenuItem value="paid">Pagado</MenuItem>
                 <MenuItem value="partial">Pago Parcial</MenuItem>
-                <MenuItem value="pending">Pendiente</MenuItem>
               </Select>
             </FormControl>
             {payForm.status === 'partial' && (

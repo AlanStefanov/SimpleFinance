@@ -19,7 +19,7 @@ export async function getAll(req, res) {
     conditions.push(`(
       (e.type != 'fixed' AND MONTH(e.expense_date) = ? AND YEAR(e.expense_date) = ?)
       OR
-      (e.type = 'fixed' AND e.id IN (SELECT expense_id FROM payments WHERE month_year = ?))
+      (e.type = 'fixed' AND e.id IN (SELECT expense_id FROM payments WHERE month_year = ? AND status IN ('paid', 'partial')))
     )`);
     params.push(m, y, monthYear);
   }
@@ -72,12 +72,16 @@ export async function create(req, res) {
 
   if (isFixed && due_day) {
     const now = new Date();
-    const monthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    await pool.query(
-      `INSERT INTO payments (name, amount, due_day, month_year, expense_id)
-       VALUES (?, ?, ?, ?, ?)`,
-      [description || 'Gasto fijo', amount, due_day, monthYear, expenseId]
-    );
+    const year = now.getFullYear();
+    const startMonth = now.getMonth() + 1;
+    for (let m = startMonth; m <= 12; m++) {
+      const monthYear = `${year}-${String(m).padStart(2, '0')}`;
+      await pool.query(
+        `INSERT INTO payments (name, amount, due_day, month_year, expense_id)
+         VALUES (?, ?, ?, ?, ?)`,
+        [description || 'Gasto fijo', amount, due_day, monthYear, expenseId]
+      );
+    }
   }
 
   const [rows] = await pool.query('SELECT * FROM expenses WHERE id = ?', [expenseId]);
@@ -105,10 +109,28 @@ export async function update(req, res) {
   );
 
   if (isFixed && due_day) {
-    await pool.query(
-      `UPDATE payments SET name = ?, amount = ?, due_day = ? WHERE expense_id = ?`,
-      [description || 'Gasto fijo', amount, due_day, req.params.id]
+    const now = new Date();
+    const year = now.getFullYear();
+    const startMonth = now.getMonth() + 1;
+    const [existingPayments] = await pool.query(
+      'SELECT month_year FROM payments WHERE expense_id = ?', [req.params.id]
     );
+    const existingMonths = new Set(existingPayments.map(p => p.month_year));
+    for (let m = startMonth; m <= 12; m++) {
+      const monthYear = `${year}-${String(m).padStart(2, '0')}`;
+      if (existingMonths.has(monthYear)) {
+        await pool.query(
+          `UPDATE payments SET name = ?, amount = ?, due_day = ? WHERE expense_id = ? AND month_year = ?`,
+          [description || 'Gasto fijo', amount, due_day, req.params.id, monthYear]
+        );
+      } else {
+        await pool.query(
+          `INSERT INTO payments (name, amount, due_day, month_year, expense_id)
+           VALUES (?, ?, ?, ?, ?)`,
+          [description || 'Gasto fijo', amount, due_day, monthYear, req.params.id]
+        );
+      }
+    }
   }
 
   const [rows] = await pool.query('SELECT * FROM expenses WHERE id = ?', [req.params.id]);
@@ -131,7 +153,7 @@ export async function getSummary(req, res) {
     `SELECT type, SUM(amount) AS total, COUNT(*) AS count
      FROM expenses
      WHERE (type != 'fixed' AND MONTH(expense_date) = ? AND YEAR(expense_date) = ?)
-        OR (type = 'fixed' AND id IN (SELECT expense_id FROM payments WHERE month_year = ?))
+        OR (type = 'fixed' AND id IN (SELECT expense_id FROM payments WHERE month_year = ? AND status IN ('paid', 'partial')))
      GROUP BY type`,
     [m, y, monthYear]
   );
