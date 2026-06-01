@@ -30,6 +30,7 @@ router.get('/', async (req, res) => {
     `SELECT e.*, ec.name AS category_name, ec.icon AS category_icon, ec.color AS category_color
      FROM expenses e
      LEFT JOIN expense_categories ec ON e.category_id = ec.id
+     WHERE e.type != 'fixed'
      ORDER BY e.expense_date DESC LIMIT 5`
   );
 
