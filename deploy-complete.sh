@@ -16,7 +16,7 @@ sleep 3
 echo ">>> Probando API..."
 TOKEN=$(curl -s http://localhost:3001/api/auth/login -X POST \
   -H 'Content-Type: application/json' \
-  -d '{"username":"astefanov","password":"Dr@wssap1234k"}' | \
+  -d '{"username":"your_user","password":"your_password"}' | \
   node -e "process.stdin.on('data',d=>{try{console.log(JSON.parse(d).token)}catch(e){console.log('FAIL')}})")
 if [ "$TOKEN" = "FAIL" ] || [ -z "$TOKEN" ]; then
   echo "ERROR: Login falló"
