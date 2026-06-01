@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Box, Grid, Card, CardContent, Typography, Button, Chip, IconButton, Dialog,
   DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem,
-  FormControl, InputLabel, LinearProgress,
+  FormControl, InputLabel, LinearProgress, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -12,26 +12,27 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {
   fetchPayments, createPayment, updatePaymentStatus, deletePayment,
-  generateMonth, fetchAccounts,
+  generateMonth, fetchAccounts, fetchCards,
 } from '../api';
 
 export default function Payments() {
   const [payments, setPayments] = useState([]);
   const [accounts, setAccounts] = useState([]);
+  const [cards, setCards] = useState([]);
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
   const [dialogOpen, setDialogOpen] = useState(false);
   const [payDialogOpen, setPayDialogOpen] = useState(false);
   const [payTarget, setPayTarget] = useState(null);
-  const [payForm, setPayForm] = useState({ status: 'paid', partial_amount: '', account_id: '' });
+  const [payForm, setPayForm] = useState({ status: 'paid', partial_amount: '', account_id: '', payment_type: 'account', card_id: '' });
   const [form, setForm] = useState({ name: '', amount: '', due_day: 1, month_year: '', account_id: '' });
 
   const load = useCallback(() => {
     fetchPayments({ month, year }).then(setPayments);
   }, [month, year]);
 
-  useEffect(() => { fetchAccounts().then(setAccounts); }, []);
+  useEffect(() => { fetchAccounts().then(setAccounts); fetchCards().then(setCards); }, []);
   useEffect(() => { load(); }, [load]);
 
   const monthYear = `${year}-${String(month).padStart(2, '0')}`;
@@ -49,7 +50,13 @@ export default function Payments() {
 
   const openPayDialog = (payment) => {
     setPayTarget(payment);
-    setPayForm({ status: payment.status, partial_amount: String(payment.partial_amount || ''), account_id: payment.account_id || '' });
+    setPayForm({
+      status: payment.status,
+      partial_amount: String(payment.partial_amount || ''),
+      account_id: payment.account_id || '',
+      payment_type: payment.card_id ? 'card' : 'account',
+      card_id: payment.card_id || '',
+    });
     setPayDialogOpen(true);
   };
 
@@ -57,7 +64,8 @@ export default function Payments() {
     await updatePaymentStatus(payTarget.id, {
       status: payForm.status,
       partial_amount: payForm.status === 'partial' ? parseFloat(payForm.partial_amount) : payForm.status === 'paid' ? payTarget.amount : 0,
-      account_id: payForm.account_id || null,
+      account_id: payForm.payment_type === 'account' ? (payForm.account_id || null) : null,
+      card_id: payForm.payment_type === 'card' ? (payForm.card_id || null) : null,
     });
     setPayDialogOpen(false);
     load();
@@ -185,6 +193,11 @@ export default function Payments() {
                             {p.account_name}
                           </Typography>
                         )}
+                        {p.card_name && (
+                          <Typography variant="caption" display="block" color="text.secondary">
+                            {p.card_name}
+                          </Typography>
+                        )}
                         <Box sx={{ display: 'flex', gap: 0.5, mt: 1 }}>
                           <Button
                             size="small"
@@ -279,13 +292,34 @@ export default function Payments() {
               <TextField label="Monto Pagado" type="number" fullWidth value={payForm.partial_amount}
                 onChange={(e) => setPayForm({ ...payForm, partial_amount: e.target.value })} />
             )}
-            <FormControl fullWidth>
-              <InputLabel>Cuenta</InputLabel>
-              <Select value={payForm.account_id} label="Cuenta" onChange={(e) => setPayForm({ ...payForm, account_id: e.target.value })}>
-                <MenuItem value=""><em>Sin cuenta</em></MenuItem>
-                {accounts.map(a => <MenuItem key={a.id} value={a.id}>{a.name}</MenuItem>)}
-              </Select>
-            </FormControl>
+            <ToggleButtonGroup
+              value={payForm.payment_type}
+              exclusive
+              onChange={(e, v) => v && setPayForm({ ...payForm, payment_type: v, account_id: '', card_id: '' })}
+              fullWidth
+              size="small"
+            >
+              <ToggleButton value="account">Cuenta</ToggleButton>
+              <ToggleButton value="card">Tarjeta</ToggleButton>
+            </ToggleButtonGroup>
+            {payForm.payment_type === 'account' && (
+              <FormControl fullWidth>
+                <InputLabel>Cuenta</InputLabel>
+                <Select value={payForm.account_id} label="Cuenta" onChange={(e) => setPayForm({ ...payForm, account_id: e.target.value })}>
+                  <MenuItem value=""><em>Sin cuenta</em></MenuItem>
+                  {accounts.map(a => <MenuItem key={a.id} value={a.id}>{a.name}</MenuItem>)}
+                </Select>
+              </FormControl>
+            )}
+            {payForm.payment_type === 'card' && (
+              <FormControl fullWidth>
+                <InputLabel>Tarjeta</InputLabel>
+                <Select value={payForm.card_id} label="Tarjeta" onChange={(e) => setPayForm({ ...payForm, card_id: e.target.value })}>
+                  <MenuItem value=""><em>Sin tarjeta</em></MenuItem>
+                  {cards.map(c => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
+                </Select>
+              </FormControl>
+            )}
           </Box>
         </DialogContent>
         <DialogActions>
