@@ -167,7 +167,7 @@ export default function Cards() {
                     <Typography variant="body2" color="text.secondary">
                       Cierre: {card.closing_day} | Vence: {card.due_day}
                     </Typography>
-                    <Typography variant="h5" sx={{ mt: 1, fontWeight: 700 }}>
+                    <Typography sx={{ mt: 1, fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' } }}>
                       {formatCurrency(card.credit_limit)}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">Límite de crédito</Typography>

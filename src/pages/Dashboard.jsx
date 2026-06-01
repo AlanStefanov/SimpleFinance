@@ -36,11 +36,11 @@ export default function Dashboard() {
         {statCards.map((card) => (
           <Grid item xs={12} sm={6} md={4} lg={2} key={card.label}>
             <Card sx={{ bgcolor: card.bg, transition: '0.2s', '&:hover': { transform: 'translateY(-2px)' } }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Box sx={{ color: card.color }}>{card.icon}</Box>
+              <CardContent sx={{ p: { xs: 1.5, md: 2 }, '&:last-child': { pb: { xs: 1.5, md: 2 } } }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                  <Box sx={{ color: card.color, display: 'flex' }}>{card.icon}</Box>
                 </Box>
-                <Typography sx={{ fontWeight: 700, color: card.color, fontSize: { xs: '1.2rem', sm: '1.3rem', md: '1.5rem' }, lineHeight: 1.2 }}>
+                <Typography sx={{ fontWeight: 700, color: card.color, fontSize: { xs: '0.95rem', sm: '1.1rem', md: '1.2rem' }, lineHeight: 1.2 }}>
                   {data ? card.value : <Skeleton width={80} />}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">{card.label}</Typography>

@@ -84,11 +84,11 @@ export default function Accounts() {
           <Typography variant="body2" sx={{ opacity: 0.8 }}>Saldo Total Disponible</Typography>
           <Box sx={{ display: 'flex', gap: { xs: 3, md: 6 }, flexWrap: 'wrap' }}>
             <Box>
-              <Typography variant="h3" sx={{ fontWeight: 700 }}>{formatArs(totalArs)}</Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }}>{formatArs(totalArs)}</Typography>
               <Typography variant="caption" sx={{ opacity: 0.7 }}>Pesos ARS</Typography>
             </Box>
             <Box>
-              <Typography variant="h3" sx={{ fontWeight: 700 }}>{formatUsd(totalUsd)}</Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }}>{formatUsd(totalUsd)}</Typography>
               <Typography variant="caption" sx={{ opacity: 0.7 }}>Dólares USD</Typography>
             </Box>
           </Box>
@@ -119,7 +119,7 @@ export default function Accounts() {
                       <IconButton size="small" onClick={() => handleDelete(account.id)}><DeleteIcon fontSize="small" /></IconButton>
                     </Box>
                   </Box>
-                  <Typography variant="h5" sx={{ mt: 2, fontWeight: 700, color: Number(account.balance) < 0 ? 'error.main' : 'text.primary' }}>
+                  <Typography sx={{ mt: 2, fontWeight: 700, fontSize: { xs: '1.2rem', md: '1.4rem' }, color: Number(account.balance) < 0 ? 'error.main' : 'text.primary' }}>
                     {formatBalance(account)}
                   </Typography>
                 </CardContent>
