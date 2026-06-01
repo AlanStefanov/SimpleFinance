@@ -88,34 +88,18 @@ export async function update(req, res) {
   const { account_id, category_id, amount, description, type, expense_date, is_paid, due_day } = req.body;
   const isFixed = type === 'fixed';
 
-  const [prevRows] = await pool.query('SELECT * FROM expenses WHERE id = ?', [req.params.id]);
-  if (!prevRows.length) return res.status(404).json({ error: 'Expense not found' });
-  const prev = prevRows[0];
-
-  const newAccountId = account_id || prev.account_id;
-  const newIsPaid = is_paid !== false;
-
-  // Deduct from account balance when marking as paid
-  if (newIsPaid && !prev.is_paid && newAccountId) {
-    await pool.query('UPDATE accounts SET balance = balance - ? WHERE id = ?', [amount, newAccountId]);
-  }
-  // Refund when unmarking as paid
-  if (!newIsPaid && prev.is_paid && prev.account_id) {
-    await pool.query('UPDATE accounts SET balance = balance + ? WHERE id = ?', [prev.amount, prev.account_id]);
-  }
-
   await pool.query(
     `UPDATE expenses SET account_id = ?, category_id = ?, amount = ?, description = ?,
      type = ?, due_day = ?, expense_date = ?, is_paid = ? WHERE id = ?`,
     [
-      newAccountId,
+      account_id || null,
       category_id || null,
       amount,
       description || '',
       type || 'daily',
       isFixed ? (due_day || null) : null,
       isFixed ? null : (expense_date || null),
-      newIsPaid,
+      is_paid !== false,
       req.params.id,
     ]
   );
