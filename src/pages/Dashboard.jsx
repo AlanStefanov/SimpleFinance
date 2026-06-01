@@ -40,7 +40,7 @@ export default function Dashboard() {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <Box sx={{ color: card.color }}>{card.icon}</Box>
                 </Box>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: card.color }}>
+                <Typography sx={{ fontWeight: 700, color: card.color, fontSize: { xs: '1.2rem', sm: '1.3rem', md: '1.5rem' }, lineHeight: 1.2 }}>
                   {data ? card.value : <Skeleton width={80} />}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">{card.label}</Typography>
