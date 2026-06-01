@@ -12,7 +12,6 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import SavingsIcon from '@mui/icons-material/Savings';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { fetchAccounts, createAccount, updateAccount, deleteAccount } from '../api';
 
@@ -106,7 +105,7 @@ export default function Accounts() {
                       <IconButton size="small" onClick={() => handleDelete(account.id)}><DeleteIcon fontSize="small" /></IconButton>
                     </Box>
                   </Box>
-                  <Typography variant="h5" sx={{ mt: 2, fontWeight: 700 }}>
+                  <Typography variant="h5" sx={{ mt: 2, fontWeight: 700, color: Number(account.balance) < 0 ? 'error.main' : 'text.primary' }}>
                     {formatCurrency(account.balance)}
                   </Typography>
                 </CardContent>
