@@ -34,7 +34,7 @@ export default function Dashboard() {
 
       <Grid container spacing={{ xs: 2, md: 3 }}>
         {statCards.map((card) => (
-          <Grid item xs={6} md={4} lg={2} key={card.label}>
+          <Grid item xs={12} sm={6} md={4} lg={2} key={card.label}>
             <Card sx={{ bgcolor: card.bg, transition: '0.2s', '&:hover': { transform: 'translateY(-2px)' } }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
