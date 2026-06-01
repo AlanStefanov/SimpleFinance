@@ -1,0 +1,154 @@
+import { useState, useEffect } from 'react';
+import {
+  Box, Grid, Card, CardContent, Typography, Button, Dialog, DialogTitle,
+  DialogContent, DialogActions, TextField, Select, MenuItem, FormControl,
+  InputLabel, IconButton, Avatar,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import SavingsIcon from '@mui/icons-material/Savings';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import { fetchAccounts, createAccount, updateAccount, deleteAccount } from '../api';
+
+const ACCOUNT_TYPES = [
+  { value: 'cash', label: 'Efectivo (ARS)', icon: <AccountBalanceWalletIcon /> },
+  { value: 'checking', label: 'Cuenta Corriente (ARS)', icon: <AccountBalanceIcon /> },
+  { value: 'savings', label: 'Caja de Ahorro (ARS)', icon: <SavingsIcon /> },
+  { value: 'credit_card', label: 'Tarjeta de Crédito', icon: <CreditCardIcon /> },
+  { value: 'usd_cash', label: 'Efectivo USD', icon: <AttachMoneyIcon /> },
+  { value: 'usd_savings', label: 'Caja de Ahorro USD', icon: <CurrencyExchangeIcon /> },
+];
+
+const COLORS = ['#1a73e8', '#34a853', '#ea4335', '#f9ab00', '#9334e6', '#00acc1', '#e91e63', '#795548'];
+
+export default function Accounts() {
+  const [accounts, setAccounts] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editItem, setEditItem] = useState(null);
+  const [form, setForm] = useState({ name: '', type: 'cash', balance: '', color: '#1a73e8' });
+
+  useEffect(() => { fetchAccounts().then(setAccounts); }, []);
+
+  const openDialog = (item = null) => {
+    if (item) {
+      setEditItem(item);
+      setForm({ name: item.name, type: item.type, balance: String(item.balance), color: item.color });
+    } else {
+      setEditItem(null);
+      setForm({ name: '', type: 'cash', balance: '', color: '#1a73e8' });
+    }
+    setDialogOpen(true);
+  };
+
+  const handleSave = async () => {
+    const data = { ...form, balance: parseFloat(form.balance) || 0 };
+    if (editItem) {
+      const updated = await updateAccount(editItem.id, data);
+      setAccounts(accounts.map(a => a.id === editItem.id ? updated : a));
+    } else {
+      const created = await createAccount(data);
+      setAccounts([...accounts, created]);
+    }
+    setDialogOpen(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm('¿Eliminar esta cuenta?')) {
+      await deleteAccount(id);
+      setAccounts(accounts.filter(a => a.id !== id));
+    }
+  };
+
+  const totalBalance = accounts.reduce((sum, a) => sum + Number(a.balance), 0);
+  const formatCurrency = (n) => `$${Number(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h5">Mis Cuentas</Typography>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => openDialog()}>Nueva Cuenta</Button>
+      </Box>
+
+      <Card sx={{ mb: 3, bgcolor: 'primary.main', color: '#fff' }}>
+        <CardContent>
+          <Typography variant="body2" sx={{ opacity: 0.8 }}>Saldo Total Disponible</Typography>
+          <Typography variant="h3" sx={{ fontWeight: 700 }}>{formatCurrency(totalBalance)}</Typography>
+        </CardContent>
+      </Card>
+
+      <Grid container spacing={{ xs: 2, md: 3 }}>
+        {accounts.map((account) => {
+          const typeInfo = ACCOUNT_TYPES.find(t => t.value === account.type);
+          return (
+            <Grid item xs={12} sm={6} md={4} key={account.id}>
+              <Card sx={{ position: 'relative', '&:hover': { boxShadow: 4 } }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Avatar sx={{ bgcolor: account.color, width: 44, height: 44 }}>
+                        {typeInfo?.icon || <AccountBalanceWalletIcon />}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{account.name}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {typeInfo?.label || account.type}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box>
+                      <IconButton size="small" onClick={() => openDialog(account)}><EditIcon fontSize="small" /></IconButton>
+                      <IconButton size="small" onClick={() => handleDelete(account.id)}><DeleteIcon fontSize="small" /></IconButton>
+                    </Box>
+                  </Box>
+                  <Typography variant="h5" sx={{ mt: 2, fontWeight: 700 }}>
+                    {formatCurrency(account.balance)}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
+      </Grid>
+
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>{editItem ? 'Editar Cuenta' : 'Nueva Cuenta'}</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+            <TextField label="Nombre" fullWidth value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <FormControl fullWidth>
+              <InputLabel>Tipo</InputLabel>
+              <Select value={form.type} label="Tipo" onChange={(e) => setForm({ ...form, type: e.target.value })}>
+                {ACCOUNT_TYPES.map(t => <MenuItem key={t.value} value={t.value}>{t.label}</MenuItem>)}
+              </Select>
+            </FormControl>
+            <TextField label="Saldo" type="number" fullWidth value={form.balance}
+              onChange={(e) => setForm({ ...form, balance: e.target.value })} />
+            <Box>
+              <InputLabel sx={{ mb: 1 }}>Color</InputLabel>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {COLORS.map(c => (
+                  <Box key={c} onClick={() => setForm({ ...form, color: c })}
+                    sx={{
+                      width: 32, height: 32, borderRadius: '50%', bgcolor: c, cursor: 'pointer',
+                      border: form.color === c ? '3px solid #000' : '3px solid transparent',
+                    }}
+                  />
+                ))}
+              </Box>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>
+          <Button variant="contained" onClick={handleSave}>{editItem ? 'Guardar' : 'Crear'}</Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+}
