@@ -42,10 +42,12 @@ CREATE TABLE IF NOT EXISTS payments (
   status ENUM('pending', 'partial', 'paid') NOT NULL DEFAULT 'pending',
   partial_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
   account_id INT,
+  card_id INT DEFAULT NULL,
   expense_id INT DEFAULT NULL,
   paid_at TIMESTAMP NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE SET NULL,
+  FOREIGN KEY (card_id) REFERENCES credit_cards(id) ON DELETE SET NULL,
   FOREIGN KEY (expense_id) REFERENCES expenses(id) ON DELETE SET NULL
 );
 
