@@ -26,6 +26,9 @@ export default function Expenses() {
   const [filterType, setFilterType] = useState('all');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
+  const [payDialogOpen, setPayDialogOpen] = useState(false);
+  const [payTarget, setPayTarget] = useState(null);
+  const [payAccountId, setPayAccountId] = useState('');
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -87,9 +90,20 @@ export default function Expenses() {
     load();
   };
 
-  const handleMarkPaid = async (e) => {
-    await updateExpense(e.id, {
-      account_id: e.account_id,
+  const handleMarkPaid = (e) => {
+    if (e.account_id) {
+      doMarkPaid(e.id, e.account_id);
+    } else {
+      setPayTarget(e);
+      setPayAccountId('');
+      setPayDialogOpen(true);
+    }
+  };
+
+  const doMarkPaid = async (id, accountId) => {
+    const e = payTarget || expenses.find(x => x.id === id);
+    await updateExpense(id, {
+      account_id: accountId || e.account_id,
       category_id: e.category_id,
       amount: e.amount,
       description: e.description,
@@ -98,7 +112,12 @@ export default function Expenses() {
       due_day: e.due_day,
       is_paid: true,
     });
+    setPayDialogOpen(false);
     load();
+  };
+
+  const handleMarkPaidConfirm = () => {
+    doMarkPaid(payTarget.id, payAccountId);
   };
 
   const handleDelete = async (id) => {
@@ -246,6 +265,26 @@ export default function Expenses() {
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>
           <Button variant="contained" onClick={handleSave}>{editItem ? 'Guardar' : 'Crear'}</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={payDialogOpen} onClose={() => setPayDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Pagar "{payTarget?.description || payTarget?.name}"</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+            <Typography variant="body2">Monto: {formatCurrency(payTarget?.amount)}</Typography>
+            <FormControl fullWidth>
+              <InputLabel>Desde qué cuenta?</InputLabel>
+              <Select value={payAccountId} label="Desde qué cuenta?" onChange={(e) => setPayAccountId(e.target.value)}>
+                <MenuItem value=""><em>Sin cuenta</em></MenuItem>
+                {accounts.map(a => <MenuItem key={a.id} value={a.id}>{a.name}</MenuItem>)}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPayDialogOpen(false)}>Cancelar</Button>
+          <Button variant="contained" onClick={handleMarkPaidConfirm}>Pagar</Button>
         </DialogActions>
       </Dialog>
     </Box>
