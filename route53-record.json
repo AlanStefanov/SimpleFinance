@@ -1,0 +1,15 @@
+{
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "lab.farmuhub.co",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          { "Value": "node3.farmuhub.co" }
+        ]
+      }
+    }
+  ]
+}

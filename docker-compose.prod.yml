@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    container_name: simple-finance
+    ports:
+      - "5137:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
