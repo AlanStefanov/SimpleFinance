@@ -8,7 +8,12 @@ router.get('/', async (req, res) => {
   const m = now.getMonth() + 1;
   const y = now.getFullYear();
 
-  const [[{ total_balance }]] = await pool.query('SELECT COALESCE(SUM(balance), 0) AS total_balance FROM accounts');
+  const [[{ ars_balance }]] = await pool.query(
+    "SELECT COALESCE(SUM(balance), 0) AS ars_balance FROM accounts WHERE type NOT IN ('usd_cash','usd_savings')"
+  );
+  const [[{ usd_balance }]] = await pool.query(
+    "SELECT COALESCE(SUM(balance), 0) AS usd_balance FROM accounts WHERE type IN ('usd_cash','usd_savings')"
+  );
   const [[{ monthly_expenses }]] = await pool.query(
     'SELECT COALESCE(SUM(amount), 0) AS monthly_expenses FROM expenses WHERE MONTH(expense_date) = ? AND YEAR(expense_date) = ?',
     [m, y]
@@ -37,7 +42,7 @@ router.get('/', async (req, res) => {
   );
 
   res.json({
-    total_balance,
+    ars_balance, usd_balance,
     monthly_expenses,
     pending_payments,
     pending_summaries,

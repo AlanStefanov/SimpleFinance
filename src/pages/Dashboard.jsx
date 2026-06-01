@@ -17,13 +17,15 @@ export default function Dashboard() {
 
   useEffect(() => { fetchDashboard().then(setData); }, []);
 
-  const formatCurrency = (n) => `$${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+  const formatArs = (n) => `$${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+  const formatUsd = (n) => `U$S ${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
 
   const statCards = [
-    { label: 'Balance Total', value: formatCurrency(data?.total_balance), icon: <AccountBalanceIcon />, color: '#1a73e8', bg: '#e8f0fe' },
-    { label: 'Gastos del Mes', value: formatCurrency(data?.monthly_expenses), icon: <ReceiptIcon />, color: '#ea4335', bg: '#fce8e6' },
-    { label: 'Pagos Pendientes', value: formatCurrency(data?.pending_payments), icon: <WarningIcon />, color: '#f9ab00', bg: '#fef7e0' },
-    { label: 'Tarjetas a Pagar', value: formatCurrency(data?.pending_summaries), icon: <CreditCardIcon />, color: '#9334e6', bg: '#f3e8fd' },
+    { label: 'Balance ARS', value: formatArs(data?.ars_balance), icon: <AccountBalanceIcon />, color: '#1a73e8', bg: '#e8f0fe' },
+    { label: 'Balance USD', value: formatUsd(data?.usd_balance), icon: <AccountBalanceIcon />, color: '#34a853', bg: '#e6f4ea' },
+    { label: 'Gastos del Mes', value: formatArs(data?.monthly_expenses), icon: <ReceiptIcon />, color: '#ea4335', bg: '#fce8e6' },
+    { label: 'Pagos Pendientes', value: formatArs(data?.pending_payments), icon: <WarningIcon />, color: '#f9ab00', bg: '#fef7e0' },
+    { label: 'Tarjetas a Pagar', value: formatArs(data?.pending_summaries), icon: <CreditCardIcon />, color: '#9334e6', bg: '#f3e8fd' },
   ];
 
   return (
@@ -32,7 +34,7 @@ export default function Dashboard() {
 
       <Grid container spacing={{ xs: 2, md: 3 }}>
         {statCards.map((card) => (
-          <Grid item xs={6} md={3} key={card.label}>
+          <Grid item xs={6} md={4} lg={2} key={card.label}>
             <Card sx={{ bgcolor: card.bg, transition: '0.2s', '&:hover': { transform: 'translateY(-2px)' } }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
