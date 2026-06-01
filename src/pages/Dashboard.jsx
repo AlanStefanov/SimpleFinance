@@ -67,27 +67,37 @@ export default function Dashboard() {
               </Box>
               {data ? (
                 <List dense>
-                  {data.recent_expenses?.map((e) => (
-                    <ListItem key={e.id} divider sx={{ px: 0 }}>
+                  {data.recent_payments?.map((p) => (
+                    <ListItem key={p.id} divider sx={{ px: 0 }}>
                       <ListItemIcon sx={{ minWidth: 36 }}>
                         <Box
                           sx={{
-                            width: 10, height: 10, borderRadius: '50%',
-                            bgcolor: e.category_color || '#e0e0e0',
+                            width: 32, height: 32, borderRadius: '50%',
+                            bgcolor: p.status === 'paid' ? '#34a853' : '#f9ab00',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
                           }}
-                        />
+                        >
+                          <ArrowForwardIosIcon sx={{ fontSize: 14, color: '#fff' }} />
+                        </Box>
                       </ListItemIcon>
                       <ListItemText
-                        primary={e.description || e.category_name || 'Gasto'}
-                        secondary={new Date(e.expense_date).toLocaleDateString('es-AR')}
+                        primary={p.name}
+                        secondary={p.paid_at ? new Date(p.paid_at).toLocaleDateString('es-AR') : ''}
                       />
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: e.amount > 0 ? 'error.main' : 'inherit' }}>
-                        -${Number(e.amount).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                      </Typography>
+                      <Box sx={{ textAlign: 'right' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: 'error.main' }}>
+                          -${Number(p.amount).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                        </Typography>
+                        {p.account_name && (
+                          <Typography variant="caption" display="block" color="text.secondary">
+                            {p.account_name}
+                          </Typography>
+                        )}
+                      </Box>
                     </ListItem>
                   ))}
-                  {(!data.recent_expenses || data.recent_expenses.length === 0) && (
-                    <Typography variant="body2" color="text.secondary">Sin gastos este mes</Typography>
+                  {(!data.recent_payments || data.recent_payments.length === 0) && (
+                    <Typography variant="body2" color="text.secondary">Sin pagos este mes</Typography>
                   )}
                 </List>
               ) : <Skeleton variant="rectangular" height={200} />}

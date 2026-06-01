@@ -29,15 +29,15 @@ router.get('/', async (req, res) => {
     "SELECT COALESCE(SUM(total_amount), 0) AS pending_summaries FROM card_summaries WHERE status = 'pending'"
   );
 
-  const [recentExpenses] = await pool.query(
-    `SELECT e.*, ec.name AS category_name, ec.icon AS category_icon, ec.color AS category_color
-     FROM expenses e
-     LEFT JOIN expense_categories ec ON e.category_id = ec.id
-     WHERE e.type != 'fixed'
-        AND ((e.type != 'fixed' AND MONTH(e.expense_date) = ? AND YEAR(e.expense_date) = ?)
-          OR (e.type = 'fixed' AND e.id IN (SELECT expense_id FROM payments WHERE month_year = ?)))
-     ORDER BY e.expense_date DESC LIMIT 5`,
-    [m, y, monthYear]
+  const [recentPayments] = await pool.query(
+    `SELECT p.*, a.name AS account_name, a.color AS account_color,
+            cc.name AS card_name, cc.color AS card_color
+     FROM payments p
+     LEFT JOIN accounts a ON p.account_id = a.id
+     LEFT JOIN credit_cards cc ON p.card_id = cc.id
+     WHERE p.month_year = ? AND p.status IN ('paid', 'partial')
+     ORDER BY p.paid_at DESC LIMIT 5`,
+    [monthYear]
   );
 
   const [upcomingPayments] = await pool.query(
@@ -53,7 +53,7 @@ router.get('/', async (req, res) => {
     monthly_expenses,
     pending_payments,
     pending_summaries,
-    recent_expenses: recentExpenses,
+    recent_payments: recentPayments,
     upcoming_payments: upcomingPayments,
   });
 });

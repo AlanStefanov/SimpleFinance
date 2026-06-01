@@ -90,6 +90,11 @@ export async function updateStatus(req, res) {
     [status, partial_amount || 0, newAccountId, newCardId, paid_at, req.params.id]
   );
 
+  // Sync linked expense is_paid
+  if (prev.expense_id) {
+    await pool.query('UPDATE expenses SET is_paid = ? WHERE id = ?', [status !== 'pending', prev.expense_id]);
+  }
+
   const [rows] = await pool.query(
     `SELECT p.*, a.name AS account_name, a.color AS account_color,
             cc.name AS card_name, cc.color AS card_color
@@ -114,6 +119,10 @@ export async function remove(req, res) {
       await pool.query('DELETE FROM card_expenses WHERE card_id = ? AND description = ? AND amount = ? AND DATE(expense_date) = DATE(?)',
         [prev.card_id, prev.name, refundAmount, prev.paid_at]);
     }
+  }
+  // Sync linked expense
+  if (prevRows[0].expense_id) {
+    await pool.query('UPDATE expenses SET is_paid = ? WHERE id = ?', [false, prevRows[0].expense_id]);
   }
   await pool.query('DELETE FROM payments WHERE id = ?', [req.params.id]);
   res.json({ message: 'Payment deleted' });

@@ -19,7 +19,7 @@ export async function getAll(req, res) {
     conditions.push(`(
       (e.type != 'fixed' AND MONTH(e.expense_date) = ? AND YEAR(e.expense_date) = ?)
       OR
-      (e.type = 'fixed' AND e.id IN (SELECT expense_id FROM payments WHERE month_year = ? AND status IN ('paid', 'partial')))
+      (e.type = 'fixed' AND e.id IN (SELECT expense_id FROM payments WHERE month_year = ?))
     )`);
     params.push(m, y, monthYear);
   }
@@ -153,7 +153,7 @@ export async function getSummary(req, res) {
     `SELECT type, SUM(amount) AS total, COUNT(*) AS count
      FROM expenses
      WHERE (type != 'fixed' AND MONTH(expense_date) = ? AND YEAR(expense_date) = ?)
-        OR (type = 'fixed' AND id IN (SELECT expense_id FROM payments WHERE month_year = ? AND status IN ('paid', 'partial')))
+        OR (type = 'fixed' AND id IN (SELECT expense_id FROM payments WHERE month_year = ?))
      GROUP BY type`,
     [m, y, monthYear]
   );
