@@ -21,18 +21,18 @@ export default function Dashboard() {
   const formatUsd = (n) => `U$S ${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
 
   const statCards = [
-    { label: 'Balance ARS', value: formatArs(data?.ars_balance), icon: <AccountBalanceIcon />, color: '#1a73e8', bg: '#e8f0fe' },
-    { label: 'Balance USD', value: formatUsd(data?.usd_balance), icon: <AccountBalanceIcon />, color: '#34a853', bg: '#e6f4ea' },
-    { label: 'Gastos del Mes', value: formatArs(data?.monthly_expenses), icon: <ReceiptIcon />, color: '#ea4335', bg: '#fce8e6' },
-    { label: 'Pagos Pendientes', value: formatArs(data?.pending_payments), icon: <WarningIcon />, color: '#f9ab00', bg: '#fef7e0' },
-    { label: 'Tarjetas a Pagar', value: formatArs(data?.pending_summaries), icon: <CreditCardIcon />, color: '#9334e6', bg: '#f3e8fd' },
+    { label: 'Balance ARS', value: formatArs(data?.ars_balance), icon: <AccountBalanceIcon />, color: '#1565c0', bg: '#e3edf7' },
+    { label: 'Balance USD', value: formatUsd(data?.usd_balance), icon: <AccountBalanceIcon />, color: '#2e7d32', bg: '#e8f5e9' },
+    { label: 'Gastos del Mes', value: formatArs(data?.monthly_expenses), icon: <ReceiptIcon />, color: '#c62828', bg: '#ffebee' },
+    { label: 'Pagos Pendientes', value: formatArs(data?.pending_payments), icon: <WarningIcon />, color: '#e65100', bg: '#fff3e0' },
+    { label: 'Tarjetas a Pagar', value: formatArs(data?.pending_summaries), icon: <CreditCardIcon />, color: '#6a1b9a', bg: '#f3e5f5' },
   ];
 
   return (
     <Box>
       <Typography variant="h5" sx={{ mb: 3 }}>Resumen Financiero</Typography>
 
-      <Grid container spacing={{ xs: 2, md: 3 }}>
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 12, sm: 12, md: 12, lg: 10 }}>
         {statCards.map((card) => (
           <Grid item xs={12} sm={6} md={4} lg={2} key={card.label}>
             <Card sx={{ bgcolor: card.bg, transition: '0.2s', '&:hover': { transform: 'translateY(-2px)' } }}>

@@ -80,15 +80,15 @@ export default function Accounts() {
       </Box>
 
       <Card sx={{ mb: 3, bgcolor: 'primary.main', color: '#fff' }}>
-        <CardContent>
+        <CardContent sx={{ py: 2, '&:last-child': { pb: 2 } }}>
           <Typography variant="body2" sx={{ opacity: 0.8 }}>Saldo Total Disponible</Typography>
           <Box sx={{ display: 'flex', gap: { xs: 3, md: 6 }, flexWrap: 'wrap' }}>
             <Box>
-              <Typography sx={{ fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }}>{formatArs(totalArs)}</Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: { xs: '1.3rem', sm: '1.5rem', md: '1.8rem' } }}>{formatArs(totalArs)}</Typography>
               <Typography variant="caption" sx={{ opacity: 0.7 }}>Pesos ARS</Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }}>{formatUsd(totalUsd)}</Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: { xs: '1.3rem', sm: '1.5rem', md: '1.8rem' } }}>{formatUsd(totalUsd)}</Typography>
               <Typography variant="caption" sx={{ opacity: 0.7 }}>Dólares USD</Typography>
             </Box>
           </Box>
