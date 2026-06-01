@@ -4,35 +4,40 @@ export async function getAll(req, res) {
   const { type, month, year } = req.query;
   let sql = `
     SELECT e.*, ac.name AS account_name, ac.color AS account_color,
-           ec.name AS category_name, ec.icon AS category_icon, ec.color AS category_color
+           ec.name AS category_name, ec.icon AS category_icon, ec.color AS category_color,
+           p.status AS payment_status
     FROM expenses e
     LEFT JOIN accounts ac ON e.account_id = ac.id
     LEFT JOIN expense_categories ec ON e.category_id = ec.id
+    LEFT JOIN payments p ON e.id = p.expense_id AND p.month_year = ?
   `;
-  const params = [];
+  const baseParams = [];
   const conditions = [];
 
   if (month && year) {
     const m = parseInt(month);
     const y = parseInt(year);
     const monthYear = `${y}-${String(m).padStart(2, '0')}`;
+    baseParams.push(monthYear);
     conditions.push(`(
       (e.type != 'fixed' AND MONTH(e.expense_date) = ? AND YEAR(e.expense_date) = ?)
       OR
       (e.type = 'fixed' AND e.id IN (SELECT expense_id FROM payments WHERE month_year = ?))
     )`);
-    params.push(m, y, monthYear);
+    baseParams.push(m, y, monthYear);
+  } else {
+    baseParams.push(null);
   }
 
   if (type) {
     conditions.push('e.type = ?');
-    params.push(type);
+    baseParams.push(type);
   }
 
   if (conditions.length) sql += ' WHERE ' + conditions.join(' AND ');
   sql += ' ORDER BY COALESCE(e.expense_date, e.created_at) DESC, e.created_at DESC';
 
-  const [rows] = await pool.query(sql, params);
+  const [rows] = await pool.query(sql, baseParams);
   res.json(rows);
 }
 
