@@ -12,6 +12,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import SavingsIcon from '@mui/icons-material/Savings';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { fetchAccounts, createAccount, updateAccount, deleteAccount } from '../api';
 
@@ -21,10 +22,10 @@ const ACCOUNT_TYPES = [
   { value: 'savings', label: 'Caja de Ahorro (ARS)', icon: <SavingsIcon /> },
   { value: 'credit_card', label: 'Tarjeta de Crédito', icon: <CreditCardIcon /> },
   { value: 'usd_cash', label: 'Efectivo USD', icon: <AttachMoneyIcon /> },
-  { value: 'usd_savings', label: 'Caja de Ahorro USD', icon: <CurrencyExchangeIcon /> },
+  { value: 'usd_savings', label: 'Caja de Ahorro USD', icon: <AttachMoneyIcon /> },
 ];
 
-const COLORS = ['#1a73e8', '#34a853', '#ea4335', '#f9ab00', '#9334e6', '#00acc1', '#e91e63', '#795548'];
+const COLORS = ['#1a73e8', '#00bcd4', '#1a1a1a', '#34a853', '#ea4335', '#f9ab00', '#9334e6', '#e91e63', '#795548', '#ff6f00'];
 
 export default function Accounts() {
   const [accounts, setAccounts] = useState([]);
