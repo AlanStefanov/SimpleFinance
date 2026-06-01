@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Grid, Card, CardContent, Typography, Skeleton, Chip, List, ListItem,
-  ListItemText, ListItemIcon,
+  ListItemText, ListItemIcon, TextField,
 } from '@mui/material';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import ReceiptIcon from '@mui/icons-material/Receipt';
@@ -14,8 +14,11 @@ import { fetchDashboard } from '../api';
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const navigate = useNavigate();
+  const now = new Date();
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [year, setYear] = useState(now.getFullYear());
 
-  useEffect(() => { fetchDashboard().then(setData); }, []);
+  useEffect(() => { fetchDashboard({ month, year }).then(setData); }, [month, year]);
 
   const formatArs = (n) => `$${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
   const formatUsd = (n) => `U$S ${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
@@ -30,7 +33,13 @@ export default function Dashboard() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>Resumen Financiero</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Typography variant="h5">Resumen Financiero</Typography>
+        <TextField type="month" size="small" value={`${year}-${String(month).padStart(2, '0')}`}
+          onChange={(e) => { const [y, m] = e.target.value.split('-'); setYear(parseInt(y)); setMonth(parseInt(m)); }}
+          sx={{ width: 180 }}
+        />
+      </Box>
 
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 12, sm: 12, md: 12, lg: 10 }}>
         {statCards.map((card) => (

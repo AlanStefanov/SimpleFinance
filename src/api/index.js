@@ -8,7 +8,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export const fetchDashboard = () => api.get('/dashboard').then(r => r.data);
+export const fetchDashboard = (params) => api.get('/dashboard', { params }).then(r => r.data);
 
 export const fetchAccounts = () => api.get('/accounts').then(r => r.data);
 export const createAccount = (data) => api.post('/accounts', data).then(r => r.data);
