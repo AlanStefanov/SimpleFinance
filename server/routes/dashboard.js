@@ -14,13 +14,16 @@ router.get('/', async (req, res) => {
   const [[{ usd_balance }]] = await pool.query(
     "SELECT COALESCE(SUM(balance), 0) AS usd_balance FROM accounts WHERE type IN ('usd_cash','usd_savings')"
   );
+  const monthYear = `${y}-${String(m).padStart(2, '0')}`;
   const [[{ monthly_expenses }]] = await pool.query(
-    'SELECT COALESCE(SUM(amount), 0) AS monthly_expenses FROM expenses WHERE MONTH(expense_date) = ? AND YEAR(expense_date) = ?',
-    [m, y]
+    `SELECT COALESCE(SUM(amount), 0) AS monthly_expenses FROM expenses
+     WHERE (type != 'fixed' AND MONTH(expense_date) = ? AND YEAR(expense_date) = ?)
+        OR (type = 'fixed' AND id IN (SELECT expense_id FROM payments WHERE month_year = ?))`,
+    [m, y, monthYear]
   );
   const [[{ pending_payments }]] = await pool.query(
     "SELECT COALESCE(SUM(amount), 0) AS pending_payments FROM payments WHERE month_year = ? AND status = 'pending'",
-    [`${y}-${String(m).padStart(2, '0')}`]
+    [monthYear]
   );
   const [[{ pending_summaries }]] = await pool.query(
     "SELECT COALESCE(SUM(total_amount), 0) AS pending_summaries FROM card_summaries WHERE status = 'pending'"
