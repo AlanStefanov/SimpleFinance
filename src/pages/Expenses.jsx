@@ -8,6 +8,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { fetchExpenses, createExpense, updateExpense, deleteExpense, fetchAccounts, fetchCategories, fetchExpenseSummary } from '../api';
 
 const EXPENSE_TYPES = [
@@ -83,6 +84,20 @@ export default function Expenses() {
     if (editItem) await updateExpense(editItem.id, data);
     else await createExpense(data);
     setDialogOpen(false);
+    load();
+  };
+
+  const handleMarkPaid = async (e) => {
+    await updateExpense(e.id, {
+      account_id: e.account_id,
+      category_id: e.category_id,
+      amount: e.amount,
+      description: e.description,
+      type: e.type,
+      expense_date: e.expense_date,
+      due_day: e.due_day,
+      is_paid: true,
+    });
     load();
   };
 
@@ -165,7 +180,12 @@ export default function Expenses() {
                   <TableCell align="center">
                     <Chip label={e.is_paid ? 'Pagado' : 'Pendiente'} size="small" color={e.is_paid ? 'success' : 'warning'} />
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
+                    {!e.is_paid && (
+                      <IconButton size="small" color="success" onClick={() => handleMarkPaid(e)} title="Marcar como pagado">
+                        <CheckCircleIcon fontSize="small" />
+                      </IconButton>
+                    )}
                     <IconButton size="small" onClick={() => openDialog(e)}><EditIcon fontSize="small" /></IconButton>
                     <IconButton size="small" onClick={() => handleDelete(e.id)}><DeleteIcon fontSize="small" /></IconButton>
                   </TableCell>
