@@ -64,8 +64,13 @@ export default function Accounts() {
     }
   };
 
-  const totalBalance = accounts.reduce((sum, a) => sum + Number(a.balance), 0);
-  const formatCurrency = (n) => `$${Number(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+  const arsAccounts = accounts.filter(a => !a.type.startsWith('usd'));
+  const usdAccounts = accounts.filter(a => a.type.startsWith('usd'));
+  const totalArs = arsAccounts.reduce((sum, a) => sum + Number(a.balance), 0);
+  const totalUsd = usdAccounts.reduce((sum, a) => sum + Number(a.balance), 0);
+  const formatArs = (n) => `$${Number(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+  const formatUsd = (n) => `U$S ${Number(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+  const formatBalance = (a) => a.type.startsWith('usd') ? formatUsd(a.balance) : formatArs(a.balance);
 
   return (
     <Box>
@@ -77,7 +82,16 @@ export default function Accounts() {
       <Card sx={{ mb: 3, bgcolor: 'primary.main', color: '#fff' }}>
         <CardContent>
           <Typography variant="body2" sx={{ opacity: 0.8 }}>Saldo Total Disponible</Typography>
-          <Typography variant="h3" sx={{ fontWeight: 700 }}>{formatCurrency(totalBalance)}</Typography>
+          <Box sx={{ display: 'flex', gap: { xs: 3, md: 6 }, flexWrap: 'wrap' }}>
+            <Box>
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>{formatArs(totalArs)}</Typography>
+              <Typography variant="caption" sx={{ opacity: 0.7 }}>Pesos ARS</Typography>
+            </Box>
+            <Box>
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>{formatUsd(totalUsd)}</Typography>
+              <Typography variant="caption" sx={{ opacity: 0.7 }}>Dólares USD</Typography>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
 
@@ -106,7 +120,7 @@ export default function Accounts() {
                     </Box>
                   </Box>
                   <Typography variant="h5" sx={{ mt: 2, fontWeight: 700, color: Number(account.balance) < 0 ? 'error.main' : 'text.primary' }}>
-                    {formatCurrency(account.balance)}
+                    {formatBalance(account)}
                   </Typography>
                 </CardContent>
               </Card>
