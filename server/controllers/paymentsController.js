@@ -90,9 +90,9 @@ export async function updateStatus(req, res) {
     [status, partial_amount || 0, newAccountId, newCardId, paid_at, req.params.id]
   );
 
-  // Sync linked expense is_paid
+  // Sync linked expense is_paid (only for non-fixed)
   if (prev.expense_id) {
-    await pool.query('UPDATE expenses SET is_paid = ? WHERE id = ?', [status !== 'pending', prev.expense_id]);
+    await pool.query('UPDATE expenses e JOIN payments p ON e.id = p.expense_id SET e.is_paid = ? WHERE e.id = ? AND e.type != ?', [status !== 'pending', prev.expense_id, 'fixed']);
   }
 
   const [rows] = await pool.query(
@@ -120,9 +120,9 @@ export async function remove(req, res) {
         [prev.card_id, prev.name, refundAmount, prev.paid_at]);
     }
   }
-  // Sync linked expense
+  // Sync linked expense (only non-fixed)
   if (prevRows[0].expense_id) {
-    await pool.query('UPDATE expenses SET is_paid = ? WHERE id = ?', [false, prevRows[0].expense_id]);
+    await pool.query('UPDATE expenses e JOIN payments p ON e.id = p.expense_id SET e.is_paid = ? WHERE e.id = ? AND e.type != ?', [false, prevRows[0].expense_id, 'fixed']);
   }
   await pool.query('DELETE FROM payments WHERE id = ?', [req.params.id]);
   res.json({ message: 'Payment deleted' });

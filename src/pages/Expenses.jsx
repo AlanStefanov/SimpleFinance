@@ -164,7 +164,10 @@ export default function Expenses() {
                     -{formatCurrency(e.amount)}
                   </TableCell>
                   <TableCell align="center">
-                    <Chip label={e.is_paid ? 'Pagado' : 'Pendiente'} size="small" color={e.is_paid ? 'success' : 'warning'} />
+                    {e.type === 'fixed'
+                      ? <Chip label={e.payment_status === 'paid' ? 'Pagado' : e.payment_status === 'partial' ? 'Parcial' : 'Pendiente'} size="small" color={e.payment_status === 'paid' ? 'success' : e.payment_status === 'partial' ? 'warning' : 'error'} />
+                      : <Chip label={e.is_paid ? 'Pagado' : 'Pendiente'} size="small" color={e.is_paid ? 'success' : 'warning'} />
+                    }
                   </TableCell>
                   <TableCell align="right">
                     <IconButton size="small" onClick={() => openDialog(e)}><EditIcon fontSize="small" /></IconButton>
