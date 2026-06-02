@@ -8,7 +8,7 @@ services:
       MYSQL_USER: finance_user
       MYSQL_PASSWORD: finance_pass
     ports:
-      - "3307:3306"
+      - "127.0.0.1:3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./server/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
@@ -22,8 +22,8 @@ services:
   app:
     build: .
     container_name: simple-finance-app
-    ports:
-      - "3001:3000"
+    expose:
+      - "3000"
     environment:
       PORT: 3000
       DB_HOST: mysql
@@ -36,5 +36,19 @@ services:
       mysql:
         condition: service_healthy
 
+  caddy:
+    image: caddy:2-alpine
+    container_name: simple-finance-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - app
+
 volumes:
   mysql_data:
+  caddy_data:

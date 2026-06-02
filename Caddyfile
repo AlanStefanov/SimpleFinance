@@ -1,0 +1,9 @@
+# Production: replace with your domain
+# finance.tudominio.com {
+#     reverse_proxy app:3000
+# }
+
+# Local dev (HTTP only)
+:80 {
+    reverse_proxy app:3000
+}
