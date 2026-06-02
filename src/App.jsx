@@ -8,6 +8,7 @@ import Expenses from './pages/Expenses';
 import Accounts from './pages/Accounts';
 import Payments from './pages/Payments';
 import Cards from './pages/Cards';
+import Chatbot from './components/Chatbot';
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/payments" element={<Payments />} />
         <Route path="/cards" element={<Cards />} />
       </Routes>
+      <Chatbot />
     </Layout>
   );
 }
