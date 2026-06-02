@@ -12,6 +12,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./server/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./server/schema-migration.sql:/docker-entrypoint-initdb.d/02-schema-migration.sql
     command: --default-authentication-plugin=mysql_native_password
 
 volumes:
