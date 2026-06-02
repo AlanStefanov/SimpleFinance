@@ -10,7 +10,7 @@ import { sendChatMessage } from '../api';
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'bot', text: '¡Hola! Soy tu asistente financiero. Probá:\n- "ingresá 1000 a bbva por sueldo"\n- "gastá 500 de caja fuerte en comida"' },
+    { role: 'bot', text: '¡Hola! Soy tu asistente financiero. Probá:\n- "ingresá 1000 a bbva por sueldo"\n- "gastá 500 de caja fuerte en comida"\n- "pagué 300 de bbva por internet"\n- "compré 2000 en caja fuerte"\n- "cobré 50000 en astropay por diseño"' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
