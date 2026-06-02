@@ -1,7 +1,7 @@
 import pool from '../db.js';
 
-const INCOME_WORDS = /ingres[eaoa]r?|ingreso|deposit[ea]r?|deposito|recib[ií]|recibir|cobr[eé]|cobrar|pon[eé]|poner|carg[ae]r?|sum[ae]r?|agreg[ae]r?|registr[aeo]|registrar|aument[ae]r?|acredit[ae]r?|entr[ae]r?|ingres/i;
-const EXPENSE_WORDS = /gast[aeo]r?|descont[ae]r?|pagar|pag[au]|pago|compr[ae]r?|rest[ae]r?|sac[ae]r?|retir[ae]r?|deb[ii]t[ae]r?|egres[oai]|consum[ii]r?|us[ae]r?/i;
+const INCOME_WORDS = /ingres[aeoáéó]r?|ingreso|deposit[aeoáéó]r?|deposito|recib[íi]|recibir|cobr[éée]|cobrar|pon[éeé]|poner|carg[aeoáéó]r?|sum[aeoáéó]r?|agreg[aeoáéó]r?|registr[aeoáéó]|registrar|aument[aeoáéó]r?|acredit[aeoáéó]r?|entr[aeoáéó]r?|ingres/i;
+const EXPENSE_WORDS = /gast[aeoáéó]r?|descont[aeoáéó]r?|pagar|pag[uú]é|pag[oó]|pag[au]|pago|compr[éeéoó]|compr[aeo]r?|rest[aeoáéó]r?|sac[aeoáéó]r?|retir[aeoáéó]r?|deb[ii]t[aeoáéó]r?|egres[oai]|consum[iió]r?|us[aeoáéó]r?/i;
 const AMOUNT_RE = /\$?\s*([\d]{1,3}(?:[.,][\d]{3})*(?:[.,]\d+)?|\d+(?:[.,]\d+)?)/;
 
 function parseAmount(str) {
