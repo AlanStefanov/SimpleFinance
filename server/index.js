@@ -11,6 +11,8 @@ import paymentsRouter from './routes/payments.js';
 import cardsRouter from './routes/cards.js';
 import categoriesRouter from './routes/categories.js';
 import dashboardRouter from './routes/dashboard.js';
+import transactionsRouter from './routes/transactions.js';
+import chatRouter from './routes/chat.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -28,6 +30,8 @@ app.use('/api/payments', authMiddleware, paymentsRouter);
 app.use('/api/cards', authMiddleware, cardsRouter);
 app.use('/api/categories', authMiddleware, categoriesRouter);
 app.use('/api/dashboard', authMiddleware, dashboardRouter);
+app.use('/api/accounts', authMiddleware, transactionsRouter);
+app.use('/api/chat', authMiddleware, chatRouter);
 
 const distPath = path.join(__dirname, '..', 'dist');
 app.use(express.static(distPath));

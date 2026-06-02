@@ -44,4 +44,10 @@ export const deleteSummary = (id) => api.delete(`/cards/summaries/${id}`).then(r
 
 export const fetchCategories = () => api.get('/categories').then(r => r.data);
 
+export const fetchTransactions = (accountId) => api.get(`/accounts/${accountId}/transactions`).then(r => r.data);
+export const createTransaction = (accountId, data) => api.post(`/accounts/${accountId}/transactions`, data).then(r => r.data);
+export const deleteTransaction = (accountId, txId) => api.delete(`/accounts/${accountId}/transactions/${txId}`).then(r => r.data);
+
+export const sendChatMessage = (message) => api.post('/chat', { message }).then(r => r.data);
+
 export default api;
