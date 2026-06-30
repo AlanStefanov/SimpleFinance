@@ -29,10 +29,14 @@ export default function Dashboard() {
       .catch(() => setUsdRate(null));
   }, []);
 
-  const formatArs = (n) => `$${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
-  const formatUsd = (n) => `U$S ${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+  const formatArs = (n) => `$${(Number(n) || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+  const formatUsd = (n) => {
+    const v = Number(n) || 0;
+    const opts = v % 1 === 0 ? { minimumFractionDigits: 0, maximumFractionDigits: 0 } : { minimumFractionDigits: 0, maximumFractionDigits: 2 };
+    return `U$S ${v.toLocaleString('es-AR', opts)}`;
+  };
 
-  const totalEnDolares = (data && usdRate && usdRate > 0) ? (data.ars_balance / usdRate) + data.usd_balance : null;
+  const totalEnDolares = (data && usdRate && usdRate > 0) ? (Number(data.ars_balance) / usdRate) + Number(data.usd_balance) : null;
 
   const statCards = [
     { label: 'Balance ARS', value: formatArs(data?.ars_balance), icon: <AccountBalanceIcon />, color: '#1565c0', bg: '#e3edf7' },
@@ -53,9 +57,9 @@ export default function Dashboard() {
         />
       </Box>
 
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 12, sm: 12, md: 12, lg: 10 }}>
+      <Grid container spacing={{ xs: 1.5, md: 2 }} columns={{ xs: 6, sm: 12, md: 12, lg: 12 }}>
         {statCards.map((card) => (
-          <Grid item xs={12} sm={6} md={4} lg={2} key={card.label}>
+          <Grid item xs={6} sm={6} md={4} lg={2} key={card.label}>
             <Card sx={{ bgcolor: card.bg, transition: '0.2s', '&:hover': { transform: 'translateY(-2px)' } }}>
               <CardContent sx={{ p: { xs: 1.5, md: 2 }, '&:last-child': { pb: { xs: 1.5, md: 2 } } }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
@@ -98,7 +102,7 @@ export default function Dashboard() {
                       />
                       <Box sx={{ textAlign: 'right' }}>
                         <Typography variant="body2" sx={{ fontWeight: 600, color: 'error.main' }}>
-                          -${Number(p.amount).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                          -${(Number(p.amount) || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                         </Typography>
                         {p.account_name && (
                           <Typography variant="caption" display="block" color="text.secondary">
