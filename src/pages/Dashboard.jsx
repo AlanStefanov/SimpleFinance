@@ -8,11 +8,13 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import WarningIcon from '@mui/icons-material/Warning';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { fetchDashboard } from '../api';
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
+  const [usdRate, setUsdRate] = useState(null);
   const navigate = useNavigate();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
@@ -20,12 +22,22 @@ export default function Dashboard() {
 
   useEffect(() => { fetchDashboard({ month, year }).then(setData); }, [month, year]);
 
+  useEffect(() => {
+    fetch('https://dolarapi.com/v1/dolares/oficial')
+      .then(r => r.json())
+      .then(r => setUsdRate(r.venta))
+      .catch(() => setUsdRate(null));
+  }, []);
+
   const formatArs = (n) => `$${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
   const formatUsd = (n) => `U$S ${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+
+  const totalEnDolares = (data && usdRate) ? (data.ars_balance * usdRate) + data.usd_balance : null;
 
   const statCards = [
     { label: 'Balance ARS', value: formatArs(data?.ars_balance), icon: <AccountBalanceIcon />, color: '#1565c0', bg: '#e3edf7' },
     { label: 'Balance USD', value: formatUsd(data?.usd_balance), icon: <AccountBalanceIcon />, color: '#2e7d32', bg: '#e8f5e9' },
+    { label: 'Total en Dólares', value: data ? (totalEnDolares != null ? formatUsd(totalEnDolares) : 'Sin cotización') : null, icon: <AttachMoneyIcon />, color: '#f57c00', bg: '#fff3e0' },
     { label: 'Gastos del Mes', value: formatArs(data?.monthly_expenses), icon: <ReceiptIcon />, color: '#c62828', bg: '#ffebee' },
     { label: 'Pagos Pendientes', value: formatArs(data?.pending_payments), icon: <WarningIcon />, color: '#e65100', bg: '#fff3e0' },
     { label: 'Tarjetas a Pagar', value: formatArs(data?.pending_summaries), icon: <CreditCardIcon />, color: '#6a1b9a', bg: '#f3e5f5' },
