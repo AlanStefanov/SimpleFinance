@@ -32,7 +32,7 @@ export default function Dashboard() {
   const formatArs = (n) => `$${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
   const formatUsd = (n) => `U$S ${(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
 
-  const totalEnDolares = (data && usdRate) ? (data.ars_balance * usdRate) + data.usd_balance : null;
+  const totalEnDolares = (data && usdRate && usdRate > 0) ? (data.ars_balance / usdRate) + data.usd_balance : null;
 
   const statCards = [
     { label: 'Balance ARS', value: formatArs(data?.ars_balance), icon: <AccountBalanceIcon />, color: '#1565c0', bg: '#e3edf7' },
